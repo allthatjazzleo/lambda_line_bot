@@ -3,10 +3,11 @@ import  json
 import  os
 import  photocrawler
 import  cryto_api
-import  lxml
+
 HEADER = {
     'Content-type': 'application/json',
-    'Authorization': 'Bearer ' + 'your line secret token'
+    'Authorization': 'Bearer ' + 'yourowntoken'
+    #change yourowntoken from your line developer platform
 }
 
 def lambda_handler(event, context):
@@ -31,13 +32,10 @@ def lambda_handler(event, context):
                 })
             else:
                 input_message = event['message']['text']
-                result = cryto_api.coin_price(event['message']['text'])
-                if result != False:
-                    price_message = "The price of {} is BTC {}/ USD {}/ HKD {}".format(input_message,result['text'],result['BTC'],result['USD'],result['HKD'])
-
-                else:
-                    price_message = "sorry, you are not entering a correct crytocurrency name"
-
+                input_message_list = [x for x in input_message.split(' ') if x!='']
+                
+                price_message = generate_message(input_message_list)
+            
                 payload['messages'].append({
                 'type': 'text',
                 'text': price_message
@@ -53,3 +51,21 @@ def lambda_handler(event, context):
             response = requests.post('https://api.line.me/v2/bot/message/reply',
                 headers=HEADER,
                 data=json.dumps(payload))
+
+def generate_message(lst):
+    message=''
+
+    for i in range(len(lst)):
+    
+        result = cryto_api.coin_price(lst[i])
+        if result != False:
+            try:
+                message += "The price of {} is BTC {}/ USD {}/ HKD {} ".format(lst[i],result['BTC'],result['USD'],result['HKD'])
+            except:
+                message += "{} is still in pre ICO stage ".format(lst[i])
+                    
+        else:
+            message += "Sorry your entry is invalid! "
+    return message        
+   
+        
