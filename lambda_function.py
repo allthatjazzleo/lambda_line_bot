@@ -4,10 +4,13 @@ import  os
 import  photocrawler
 import  cryto_api
 
+
+Token = os.environ['token']
+
 HEADER = {
     'Content-type': 'application/json',
-    'Authorization': 'Bearer ' + 'yourowntoken'
-    #change yourowntoken from your line developer platform
+    'Authorization': 'Bearer ' + Token
+#cange yourowntoken from your line developer platform    
 }
 
 def lambda_handler(event, context):
